@@ -36,5 +36,8 @@ public class JSegmentAssemblyTest extends JUnitSuite {
         AkkaLocation location = locationService.resolve(connection, Duration.ofSeconds(10)).get().get();
 
         Assert.assertEquals(location.connection(), connection);
+
+        Assert.fail("just a test of Jenkins email when a unit test fails");
+
     }
 }

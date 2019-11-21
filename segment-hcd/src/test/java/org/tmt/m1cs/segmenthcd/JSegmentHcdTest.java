@@ -17,7 +17,12 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-public class JSegmentHcdTest extends JUnitSuite {
+public class
+
+
+
+
+JSegmentHcdTest extends JUnitSuite {
 
     @ClassRule
     public static final FrameworkTestKitJunitResource testKit =
@@ -26,6 +31,9 @@ public class JSegmentHcdTest extends JUnitSuite {
     @BeforeClass
     public static void setup() {
         // uncomment if you want one HCD run for all tests
+
+        System.out.println("BEFORE CLASS");
+
         testKit.spawnStandalone(com.typesafe.config.ConfigFactory.load("JSegmentHcdStandalone.conf"));
     }
 
@@ -36,5 +44,6 @@ public class JSegmentHcdTest extends JUnitSuite {
         AkkaLocation location = locationService.resolve(connection, Duration.ofSeconds(10)).get().get();
 
         Assert.assertEquals(location.connection(), connection);
+
     }
 }

@@ -101,6 +101,10 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
     @Override
     public CommandResponse.SubmitResponse onSubmit(ControlCommand controlCommand) {
+
+
+
+
         return new CommandResponse.Completed(controlCommand.runId());
     }
 
