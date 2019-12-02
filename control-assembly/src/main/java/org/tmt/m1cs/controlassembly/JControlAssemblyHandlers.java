@@ -103,8 +103,6 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     public CommandResponse.SubmitResponse onSubmit(ControlCommand controlCommand) {
 
 
-
-
         return new CommandResponse.Completed(controlCommand.runId());
     }
 

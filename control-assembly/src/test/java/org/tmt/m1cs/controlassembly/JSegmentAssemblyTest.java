@@ -1,10 +1,23 @@
 package org.tmt.m1cs.controlassembly;
 
+
+import csw.command.api.javadsl.ICommandService;
+
+import csw.command.client.CommandServiceFactory;
 import csw.location.api.javadsl.ILocationService;
 import csw.location.api.javadsl.JComponentType;
 import csw.location.models.AkkaLocation;
 import csw.location.models.ComponentId;
+
 import csw.location.models.Connection;
+
+import csw.params.commands.CommandName;
+import csw.params.commands.CommandResponse;
+import csw.params.commands.Setup;
+import csw.params.core.generics.Key;
+import csw.params.core.generics.Parameter;
+import csw.params.core.models.Prefix;
+import csw.params.javadsl.JKeyType;
 import csw.testkit.javadsl.FrameworkTestKitJunitResource;
 import csw.testkit.javadsl.JCSWService;
 import org.junit.Assert;
@@ -12,12 +25,23 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.scalatestplus.junit.JUnitSuite;
+import akka.util.Timeout;
+import scala.concurrent.duration.FiniteDuration;
+
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+
+import static csw.params.javadsl.JUnits.degree;
 
 public class JSegmentAssemblyTest extends JUnitSuite {
+
+
 
     @ClassRule
     public static final FrameworkTestKitJunitResource testKit =
@@ -38,6 +62,50 @@ public class JSegmentAssemblyTest extends JUnitSuite {
         Assert.assertEquals(location.connection(), connection);
 
         Assert.fail("just a test of Jenkins email when a unit test fails");
+
+    }
+    @Test
+    public void testAssemblyHandlesCommand() throws ExecutionException, InterruptedException {
+        Connection.AkkaConnection connection = new Connection.AkkaConnection(new ComponentId("JSegmentAssembly", JComponentType.Assembly));
+        ILocationService locationService = testKit.jLocationService();
+        AkkaLocation location = locationService.resolve(connection, Duration.ofSeconds(10)).get().get();
+
+        ICommandService commandService = CommandServiceFactory.jMake(location, testKit.actorSystem());
+
+        // send a command
+        //prefix
+        Prefix prefix = new Prefix("m1cs.control.test");
+
+        //keys
+        Key segmentKey    = JKeyType.IntKey().make("segment");
+        Key config1Key   = JKeyType.DoubleKey().make("config1");
+        Key config2Key   = JKeyType.DoubleKey().make("config2");
+
+        Parameter segmentParam = segmentKey.set(356);
+        Parameter config1Param   = config1Key.set(35.34).withUnits(degree);
+        Parameter config2Param   = config2Key.set(0.34).withUnits(degree);
+
+        CommandName commandName = new CommandName("setConfigurationParameters");
+
+        Setup submitSetup = new Setup(prefix, commandName, Optional.empty()).add(segmentParam).add(config1Param).add(config2Param);
+
+        // send the command via the command service
+
+
+            CompletableFuture<CommandResponse.SubmitResponse> immediateCommandF =
+
+                        commandService
+                                .submitAndWait(submitSetup, new Timeout(new FiniteDuration(5, TimeUnit.SECONDS)))
+                            .thenApply(
+                                    response -> {
+
+                                        // test that the response was completed
+                                        Assert.assertTrue("Response was " + response.toString(), response instanceof CommandResponse.Completed);
+
+                                        return response;
+                                    }
+                            );
+
 
     }
 }
