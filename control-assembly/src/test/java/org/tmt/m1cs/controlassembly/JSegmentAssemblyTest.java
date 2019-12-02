@@ -61,8 +61,6 @@ public class JSegmentAssemblyTest extends JUnitSuite {
 
         Assert.assertEquals(location.connection(), connection);
 
-        Assert.fail("just a test of Jenkins email when a unit test fails");
-
     }
     @Test
     public void testAssemblyHandlesCommand() throws ExecutionException, InterruptedException {
