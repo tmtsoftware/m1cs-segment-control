@@ -108,6 +108,6 @@ public class JSegmentAssemblyTest extends JUnitSuite {
 
 
 
-            Thread.sleep(5000);
+            immediateCommandF.get();
     }
 }
