@@ -94,14 +94,16 @@ public class JSegmentAssemblyTest extends JUnitSuite {
 
                         commandService
                                 .submitAndWait(submitSetup, new Timeout(new FiniteDuration(5, TimeUnit.SECONDS)))
-                            .thenApply(
-                                    response -> {
-
-                                        // test that the response was completed
-                                        Assert.assertTrue("Response was " + response.toString(), response instanceof CommandResponse.Completed);
-
-                                        return response;
-                                    }
+                                .thenApply(
+                                        response -> {
+                                            if (response instanceof CommandResponse.Completed) {
+                                                //do something with completed result
+                                            } else {
+                                                // do something with unexpected response
+                                                Assert.fail("command response is " + response.toString());
+                                            }
+                                            return response;
+                                        }
                             );
 
 
