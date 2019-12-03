@@ -119,7 +119,7 @@ public class JSegmentAssemblyTest extends JUnitSuite {
 
     }
 
-
+    @Test
     public void testPublishEvents() throws ExecutionException, InterruptedException {
 
         Prefix prefix = new Prefix("m1cs.event.test");
