@@ -1,6 +1,9 @@
 package org.tmt.m1cs.controlassembly;
 
 
+import akka.Done;
+import akka.stream.javadsl.Keep;
+import akka.stream.javadsl.Source;
 import csw.command.api.javadsl.ICommandService;
 
 import csw.command.client.CommandServiceFactory;
@@ -17,6 +20,9 @@ import csw.params.commands.Setup;
 import csw.params.core.generics.Key;
 import csw.params.core.generics.Parameter;
 import csw.params.core.models.Prefix;
+import csw.params.events.Event;
+import csw.params.events.EventName;
+import csw.params.events.SystemEvent;
 import csw.params.javadsl.JKeyType;
 import csw.testkit.javadsl.FrameworkTestKitJunitResource;
 import csw.testkit.javadsl.JCSWService;
@@ -33,6 +39,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -111,4 +118,30 @@ public class JSegmentAssemblyTest extends JUnitSuite {
             immediateCommandF.get();
 
     }
+
+
+    public void testPublishEvents() throws ExecutionException, InterruptedException {
+
+        Prefix prefix = new Prefix("m1cs.event.test");
+
+        int n = 10;
+
+        //#with-source
+        Source<Event, CompletionStage<Done>> eventStream = Source
+                .range(1, n)
+                .map(id -> makeEvent(id, prefix, new EventName("filter_wheel")))
+                .watchTermination(Keep.right());
+
+        testKit.jEventService().defaultPublisher().<CompletionStage<Done>>publish(eventStream, failure -> {
+            /*do something*/
+            Assert.fail(failure.getMessage());
+        });
+        //#with-source
+    }
+
+    private Event makeEvent(int id, Prefix prefix, EventName name) {
+        return new SystemEvent(prefix, name);
+    }
+
+
 }
