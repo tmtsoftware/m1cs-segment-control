@@ -109,5 +109,6 @@ public class JSegmentAssemblyTest extends JUnitSuite {
 
 
             immediateCommandF.get();
+
     }
 }
