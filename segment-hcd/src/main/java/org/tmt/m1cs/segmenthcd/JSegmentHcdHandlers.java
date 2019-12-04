@@ -9,11 +9,16 @@ import csw.location.models.TrackingEvent;
 import csw.logging.api.javadsl.ILogger;
 import csw.params.commands.CommandResponse;
 import csw.params.commands.ControlCommand;
+import csw.params.commands.Setup;
+import csw.params.core.generics.Key;
+import csw.params.core.generics.Parameter;
+import csw.params.javadsl.JKeyType;
 import csw.time.core.models.UTCTime;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -48,8 +53,8 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
 
         statePublisherActorList = new ArrayList<ActorRef<JStatePublisherActor.StatePublisherMessage>>();
 
-        // create 492 workers
-        for (int i=0; i< 492; i++) {
+        // This creates 492 worker actors, which are much more lightweight than individual HCDs
+        for (int i=0; i<492; i++) {
             ActorRef<JStatePublisherActor.StatePublisherMessage> statePublisherActor =
                     ctx.spawnAnonymous(JStatePublisherActor.behavior(cswCtx.currentStatePublisher(), cswCtx.loggerFactory()));
             statePublisherActorList.add(statePublisherActor);
@@ -85,8 +90,13 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
             case "config":
                 log.debug("handling config command: " + controlCommand);
 
-                // this simulates doing something
-                try { Thread.sleep(500); } catch (InterruptedException e) {};
+                // unpack the command to determine the target segment
+                Key segmentKey    = JKeyType.IntKey().make("segment");
+                Setup setup = (Setup)controlCommand;
+                Optional<Parameter<Integer>> segmentParameter = setup.jGet(segmentKey); //present
+                Integer segmentNumber = (segmentParameter.get().head()) + 1;
+
+
 
                 cswCtx.commandResponseManager().addOrUpdateCommand(new CommandResponse.Completed(controlCommand.runId()));
 

@@ -1,5 +1,6 @@
 package org.tmt.m1cs.controlassembly;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.javadsl.ActorContext;
 import csw.command.api.javadsl.ICommandService;
 import csw.command.client.CommandServiceFactory;
@@ -35,6 +36,8 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     private final ILogger log;
     private  ActorContext<TopLevelActorMessage> ctx;
 
+    private ActorRef<JCommandHandlerActor.CmdMessage> commandHandlerActor;
+
     // reference to the template HCD
     private Map<Integer, Optional<ICommandService>> runningHcds;
     private Optional<ICommandService> hcd = Optional.empty(); // NOTE the use of Optional
@@ -44,6 +47,9 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
         this.cswCtx = cswCtx;
         this.ctx = ctx;
         this.log = cswCtx.loggerFactory().getLogger(getClass());
+
+        // Actor that handles commands and directs them to worker actors
+        commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), hcd, Boolean.TRUE, cswCtx.loggerFactory()));
     }
 
 
@@ -51,7 +57,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     public CompletableFuture<Void> jInitialize() {
     log.info("Initializing segment assembly...");
     return CompletableFuture.runAsync(() -> {
-            runningHcds = new HashMap<Integer, Optional<ICommandService>>();
+
         });
     }
 
@@ -79,20 +85,9 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
             hcd = Optional.of(CommandServiceFactory.jMake(hcdLocation, ctx.getSystem()));
 
-            Integer hcdNumber = getSegmentNumber(hcdLocation.prefix());
-            log.info("in onLocationTrackingEvent() " + hcd + ", " + hcdNumber);
-
-            runningHcds.put(hcdNumber, hcd);
-
         }
     }
 
-    private Integer getSegmentNumber(Prefix prefix) {
-        String prefixStr = prefix.prefix();
-        String numberString = prefixStr.substring(15, prefixStr.length() - 1);
-        log.info("localtion Tracking NUMBER- " + numberString);
-        return Integer.valueOf(numberString);
-    }
 
     @Override
     public CommandResponse.ValidateCommandResponse validateCommand(ControlCommand controlCommand) {
@@ -102,7 +97,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     @Override
     public CommandResponse.SubmitResponse onSubmit(ControlCommand controlCommand) {
 
-        log.info("Received command");
+        commandHandlerActor.tell(new JCommandHandlerActor.SubmitCommandMessage(controlCommand));
 
         return new CommandResponse.Completed(controlCommand.runId());
     }

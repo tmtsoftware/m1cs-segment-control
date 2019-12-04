@@ -1,4 +1,12 @@
-# segment
+#M1CS Example
+
+This project provides an example Assembly (control-assembly) and HCD (segment-hcd) for use by the 
+M1CS team.  It contains Java examples of:
+* Akka actor: standard code patterns, message handling, CSW integration
+* CSW components and services usage: command sending and command handling/validation, event subscription, 
+component CurrentState publishing.
+* Component testing using JUnit and CSW testkit
+* Akka actor testing using JUnit
 
 This project implements an HCD (Hardware Control Daemon) and an Assembly using 
 TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs. 
@@ -9,12 +17,11 @@ TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs.
 * segment-hcd - an HCD that talks to the segment hardware
 * segment-deploy - for starting/deploying HCDs and assemblies
 
-## Build Instructions
+## CI Build and Test 
 
-The build is based on sbt and depends on libraries generated from the 
-[csw](https://github.com/tmtsoftware/csw) project.
+A Jenkins project is included that builds from this Github project and runs the test suites.
 
-See [here](https://www.scala-sbt.org/1.0/docs/Setup.html) for instructions on installing sbt.
+## Building and deploying manually
 
 ## Prerequisites for running Components
 
@@ -56,4 +63,4 @@ Run the container cmd script with arguments. For example:
 ```
 ./target/universal/stage/bin/segment-container-cmd-app --local ./src/main/resources/SampleContainer.conf
 ```
-# m1cs-segment-control
+
