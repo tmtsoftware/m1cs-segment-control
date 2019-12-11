@@ -1,4 +1,4 @@
-#M1CS Example
+# M1CS Example
 
 This project provides an example Assembly (control-assembly) and HCD (segment-hcd) for use by the 
 M1CS team.  It contains Java examples of:
@@ -19,7 +19,7 @@ TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs.
 
 ## CI Build and Test 
 
-A Jenkins project is included that builds from this Github project and runs the test suites.
+A Jenkins project is included that builds from this Github project and runs the test suites. The Jenkins environment for M1CS team members is located at https://52.36.63.204:8080
 
 ## Building and deploying manually
 
