@@ -12,7 +12,7 @@ This project implements an HCD (Hardware Control Daemon) and an Assembly using
 TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs. 
 
 
-![Test Image 4](https://github.com/tmtsoftware/m1cs-segment-control/master/M1CS example.jpg)
+![Test Image 4](https://github.com/tmtsoftware/m1cs-segment-control/blob/master/M1CS%20example.jpg)
 
 ## Subprojects
 
