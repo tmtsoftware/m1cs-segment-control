@@ -11,8 +11,31 @@ component CurrentState publishing.
 This project implements an HCD (Hardware Control Daemon) and an Assembly using 
 TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs. 
 
+## M1CS Example Design
 
 ![Test Image 4](https://github.com/tmtsoftware/m1cs-segment-control/blob/master/M1CS%20example.jpg)
+
+The Assembly and HCD example design is fairly typical of designs for assemblies and HCDs so far being explored by the controls group.
+
+### Control Assembly example design
+The JControlAssemblyHandler appears in grey color in the diagram as it is a CSW template class with hooks for lifecycle events and command handling events.  
+
+During initialization, the Handler creates the JCommandHandlerActor, JEventHandlerActor, JEventPublisherActor and the JMonitorActor.  References to these actors are maintained by the Handler so that commands and events, etc can passed to them for processing.
+
+During initialization, configuration for the assembly is obtained using the CSW Configuration Service.  An example of reading specific values from the service are included in the example code.
+
+### Command Handling
+Incoming commands to the assembly are first validated and then handled by the onSubmit() method that the programmer overrides.  In our case the command is passed to the JCommandHandlerActor for processing.  The example code shows how worker actors are used to handle commands asynchronously by creating a worker actor to handle each command.  The example contains one worker actor for the ‘SetConfigurationParameters’ command.
+
+### HCD Command Handling
+The Segment HCD also contains a JSegmentHcdHandlers class provided by the CSW framework that operates in an identical fashion as the one in the assembly.  During initialization the JSegmentHcdHander creates the JSegCommandHandlerActor, creates and starts the JStatePublisherActor and creates 492 JSegmentActor instances, one for each segment.
+
+When the ‘SetConfigurationParameters’ command reaches the HCD, it is handled by the JSegmentHcdHandlers onSubmit() method that the programmer overrides, which passes it to the JSegCommandHandlerActor  that determines which JSegmentActor the command is meant for, and sends the appropriate message to that actor.
+
+### State and Error Reporting
+The JStatePublisherActor publishes a CurrentState message to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that can be used for state management of the assembly.  Events derived from monitor state and the HCD are published to outside the assembly using the JEventPublisherActor. 
+
+
 
 ## Subprojects
 
