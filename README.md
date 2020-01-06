@@ -8,6 +8,9 @@ component CurrentState publishing.
 * Component testing using JUnit and CSW testkit
 * Akka actor testing using JUnit
 
+This project also is used for the M1CS team to gain experience with the STIL Continuous Integration (CI) and BTEs.
+An AWS BTE that includes a Jenkins build and test project: *M1CS_Segment_Control_Test* is provided.  
+
 This project implements an HCD (Hardware Control Daemon) and an Assembly using 
 TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs. 
 
