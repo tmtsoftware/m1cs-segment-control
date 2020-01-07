@@ -48,9 +48,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
         this.ctx = ctx;
         this.log = cswCtx.loggerFactory().getLogger(getClass());
 
-        // Actor that handles commands and directs them to worker actors
-        commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), hcd, Boolean.TRUE, cswCtx.loggerFactory()));
-    }
+     }
 
 
     @Override
@@ -84,6 +82,9 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
             AkkaLocation hcdLocation = (AkkaLocation) ((LocationUpdated) trackingEvent).location();
 
             hcd = Optional.of(CommandServiceFactory.jMake(hcdLocation, ctx.getSystem()));
+
+            // Actor that handles commands and directs them to worker actors
+            commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), hcd, Boolean.TRUE, cswCtx.loggerFactory()));
 
         }
     }
