@@ -95,8 +95,6 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
     @Override
     public CommandResponse.SubmitResponse onSubmit(ControlCommand controlCommand) {
 
-        System.out.println("HCD Handler onSubmit()");
-
         // this is where the HCD handles commands from the assembly
         switch (controlCommand.commandName().name()) {
 

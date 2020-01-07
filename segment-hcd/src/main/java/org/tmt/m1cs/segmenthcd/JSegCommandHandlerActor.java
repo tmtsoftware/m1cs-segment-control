@@ -64,9 +64,9 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
 
         ReceiveBuilder<CmdMessage> builder = newReceiveBuilder()
                 .onMessage(SubmitCommandMessage.class,
-                        command -> command.controlCommand.commandName().name().equals("setConfigurationParameters"),
+                        command -> command.controlCommand.commandName().name().equals("configure"),
                         command -> {
-                            log.info("SetConfigurationParameters");
+                            log.info("configure");
                             handleSetConfigurationParameters(command.controlCommand);
                             return behavior(commandResponseManager, Boolean.TRUE, segmentActorList, loggerFactory);
                         })
