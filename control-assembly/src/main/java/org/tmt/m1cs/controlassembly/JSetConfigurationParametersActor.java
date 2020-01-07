@@ -58,6 +58,7 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
                         command -> command.commandName().name().equals("setConfigurationParameters"),
                         command -> {
                             log.info("SetConfigurationParameters");
+                            System.out.println("IN CREATE RECEIVE");
                             handleSetConfigurationParameters(command);
                             return behavior(commandResponseManager, segmentHcd,loggerFactory);
                         });
