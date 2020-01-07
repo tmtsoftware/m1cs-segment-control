@@ -103,6 +103,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
             case "config":
                 log.debug("handling config command: " + controlCommand);
 
+
                 // unpack the command to determine the target segment
                 Key segmentKey    = JKeyType.IntKey().make("segment");
                 Setup setup = (Setup)controlCommand;
