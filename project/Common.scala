@@ -22,7 +22,7 @@ object Common extends AutoPlugin {
       "-unchecked",
       "-deprecation",
       "-Xlint",
-      "-Ywarn-dead-code",
+      "-Ywarn-dead-code"
     ),
     javacOptions in (Compile, doc) ++= Seq("-Xdoclint:none"),
     testOptions in Test ++= Seq(
@@ -30,7 +30,7 @@ object Common extends AutoPlugin {
       Tests.Argument("-oDF"),
       // -v Log "test run started" / "test started" / "test run finished" events on log level "info" instead of "debug".
       // -a Show stack traces and exception class name for AssertionErrors.
-      Tests.Argument(TestFrameworks.JUnit, "-v", "-a")
+      Tests.Argument(TestFrameworks.JUnit, "+v", "-a")
     ),
     resolvers += Resolver.bintrayRepo("twtmt", "maven"),
     resolvers += "bintray" at "http://jcenter.bintray.com",
