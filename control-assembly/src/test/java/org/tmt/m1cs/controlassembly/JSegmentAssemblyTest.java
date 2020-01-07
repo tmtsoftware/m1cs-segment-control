@@ -100,7 +100,7 @@ public class JSegmentAssemblyTest extends JUnitSuite {
             CompletableFuture<CommandResponse.SubmitResponse> immediateCommandF =
 
                         commandService
-                                .submitAndWait(submitSetup, new Timeout(new FiniteDuration(5, TimeUnit.SECONDS)))
+                                .submitAndWait(submitSetup, new Timeout(new FiniteDuration(20, TimeUnit.SECONDS)))
                                 .thenApply(
                                         response -> {
                                             if (response instanceof CommandResponse.Completed) {

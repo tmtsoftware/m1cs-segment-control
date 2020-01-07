@@ -56,6 +56,9 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     log.info("Initializing segment assembly...");
     return CompletableFuture.runAsync(() -> {
 
+        // Actor that handles commands and directs them to worker actors
+        commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), hcd, Boolean.TRUE, cswCtx.loggerFactory()));
+
         });
     }
 
@@ -83,8 +86,6 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
             hcd = Optional.of(CommandServiceFactory.jMake(hcdLocation, ctx.getSystem()));
 
-            // Actor that handles commands and directs them to worker actors
-            commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), hcd, Boolean.TRUE, cswCtx.loggerFactory()));
 
         }
     }
