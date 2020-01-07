@@ -100,7 +100,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
         // this is where the HCD handles commands from the assembly
         switch (controlCommand.commandName().name()) {
 
-            case "config":
+            case "configure":
                 log.debug("handling config command: " + controlCommand);
 
 
