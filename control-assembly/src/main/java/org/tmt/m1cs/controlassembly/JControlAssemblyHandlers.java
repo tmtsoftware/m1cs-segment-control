@@ -79,12 +79,14 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     public void onLocationTrackingEvent(TrackingEvent trackingEvent) {
         log.info("in onLocationTrackingEvent()");
 
+        System.out.println("in onLocationTrackingEvent()");
+
         if (trackingEvent instanceof LocationUpdated) {
             // do something for the tracked location when it is updated
 
             AkkaLocation hcdLocation = (AkkaLocation) ((LocationUpdated) trackingEvent).location();
 
-            System.out.println("HCD found");
+
 
             hcd = Optional.of(CommandServiceFactory.jMake(hcdLocation, ctx.getSystem()));
 
