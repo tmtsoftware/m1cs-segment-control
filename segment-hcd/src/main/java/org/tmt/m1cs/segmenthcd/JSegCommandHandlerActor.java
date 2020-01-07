@@ -98,6 +98,8 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
             Integer segmentNumber = (Integer)segmentParam.jValues().get(0);
             ActorRef<ControlCommand> segmentActor = segmentActorList.get(segmentNumber-1);
 
+            System.out.println("messaging segment Actor: " + segmentActor + " for segment " + segmentNumber);
+
             segmentActor.tell(controlCommand);
 
         }

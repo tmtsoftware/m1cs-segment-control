@@ -107,6 +107,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
                 Optional<Parameter<Integer>> segmentParameter = setup.jGet(segmentKey); //present
                 Integer segmentNumber = (segmentParameter.get().head()) + 1;
 
+                System.out.println("messaging segCommandHandlerActor");
 
                 segCommandHandlerActor.tell(controlCommand);
 
