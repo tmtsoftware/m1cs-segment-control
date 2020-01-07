@@ -107,7 +107,7 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
                                             Parameter config1Param,
                                             Parameter config2Param) {
 
-        System.out.println("SETCONFIG");
+        System.out.println("SETCONFIG " + segmentHcd);
 
         if (segmentHcd.isPresent()) {
 
