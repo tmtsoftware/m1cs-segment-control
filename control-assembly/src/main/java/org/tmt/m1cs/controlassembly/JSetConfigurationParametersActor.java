@@ -107,6 +107,8 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
 
         if (segmentHcd.isPresent()) {
 
+            System.out.println("Sending command to HCD");
+
             Setup setupHcd = new Setup(assemblyPrefix, new CommandName("configure"), Optional.empty()).add(segmentParam).add(config1Param).add(config2Param);
 
             CompletableFuture<CommandResponse.SubmitResponse> commandResponse = segmentHcd.get()

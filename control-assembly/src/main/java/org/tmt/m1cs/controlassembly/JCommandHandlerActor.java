@@ -93,6 +93,7 @@ public class JCommandHandlerActor extends AbstractBehavior<JCommandHandlerActor.
 
         if (online) {
 
+            System.out.println("Command Handler sending to worker");
             ActorRef<ControlCommand> setConfigurationParametersActor =
                     actorContext.spawnAnonymous(JSetConfigurationParametersActor.behavior(commandResponseManager, segmentHcd, loggerFactory));
 
