@@ -34,10 +34,11 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
     private final JCswContext cswCtx;
     private final ILogger log;
     private final ActorContext<TopLevelActorMessage> ctx;
+    private ActorRef<ControlCommand> segCommandHandlerActor;
+    private ActorRef<JStatePublisherActor.StatePublisherMessage> statePublisherActor;
 
 
-
-    List<ActorRef<JStatePublisherActor.StatePublisherMessage>> statePublisherActorList;
+    List<ActorRef<ControlCommand>> segmentActorList;
 
     JSegmentHcdHandlers(ActorContext<TopLevelActorMessage> ctx, JCswContext cswCtx) {
         super(ctx, cswCtx);
@@ -51,17 +52,27 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
     log.info("Initializing segment HCD...");
     return CompletableFuture.runAsync(() -> {
 
-        statePublisherActorList = new ArrayList<ActorRef<JStatePublisherActor.StatePublisherMessage>>();
+
+        statePublisherActor =
+                ctx.spawnAnonymous(JStatePublisherActor.behavior(cswCtx.currentStatePublisher(), cswCtx.loggerFactory()));
+
+
+        segmentActorList = new ArrayList<ActorRef<ControlCommand>>();
 
         // This creates 492 worker actors, which are much more lightweight than individual HCDs
         for (int i=0; i<492; i++) {
-            ActorRef<JStatePublisherActor.StatePublisherMessage> statePublisherActor =
-                    ctx.spawnAnonymous(JStatePublisherActor.behavior(cswCtx.currentStatePublisher(), cswCtx.loggerFactory()));
-            statePublisherActorList.add(statePublisherActor);
+            ActorRef<ControlCommand> segmentActor =
+                    ctx.spawnAnonymous(JSegmentActor.behavior(cswCtx.commandResponseManager(), cswCtx.loggerFactory()));
+            segmentActorList.add(segmentActor);
 
-            log.info("created worker");
+            log.info("created segment worker " +(i+1));
         }
-        });
+
+        segCommandHandlerActor =
+                ctx.spawnAnonymous(JSegCommandHandlerActor.behavior(cswCtx.commandResponseManager(), true, segmentActorList, cswCtx.loggerFactory()));
+
+
+    });
     }
 
     @Override
@@ -97,6 +108,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
                 Integer segmentNumber = (segmentParameter.get().head()) + 1;
 
 
+                segCommandHandlerActor.tell(controlCommand);
 
                 cswCtx.commandResponseManager().addOrUpdateCommand(new CommandResponse.Completed(controlCommand.runId()));
 
