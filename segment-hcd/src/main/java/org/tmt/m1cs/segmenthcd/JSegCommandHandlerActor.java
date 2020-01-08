@@ -62,6 +62,8 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
     @Override
     public Receive<CmdMessage> createReceive() {
 
+        System.out.println("IN CREATE RECEIVE");
+
         ReceiveBuilder<CmdMessage> builder = newReceiveBuilder()
                 .onMessage(SubmitCommandMessage.class,
                         command -> command.controlCommand.commandName().name().equals("configure"),
