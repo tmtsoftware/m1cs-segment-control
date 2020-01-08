@@ -32,20 +32,22 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
     private ActorContext<ControlCommand> actorContext;
     private JLoggerFactory loggerFactory;
     private ILogger log;
+    private Integer segmentNumber;
     private CommandResponseManager commandResponseManager;
 
 
-    private JSegmentActor(ActorContext<ControlCommand> actorContext, CommandResponseManager commandResponseManager, JLoggerFactory loggerFactory) {
+    private JSegmentActor(ActorContext<ControlCommand> actorContext, CommandResponseManager commandResponseManager, Integer segmentNumber, JLoggerFactory loggerFactory) {
         this.actorContext = actorContext;
         this.loggerFactory = loggerFactory;
         this.log = loggerFactory.getLogger(actorContext, getClass());
         this.commandResponseManager = commandResponseManager;
+        this.segmentNumber = segmentNumber;
 
     }
 
-    public static <ControlCommand> Behavior<ControlCommand> behavior(CommandResponseManager commandResponseManager, JLoggerFactory loggerFactory) {
+    public static <ControlCommand> Behavior<ControlCommand> behavior(CommandResponseManager commandResponseManager, Integer segmentNumber, JLoggerFactory loggerFactory) {
         return Behaviors.setup(ctx -> {
-            return (AbstractBehavior<ControlCommand>) new JSegmentActor((ActorContext<csw.params.commands.ControlCommand>) ctx, commandResponseManager, loggerFactory);
+            return (AbstractBehavior<ControlCommand>) new JSegmentActor((ActorContext<csw.params.commands.ControlCommand>) ctx, commandResponseManager, segmentNumber, loggerFactory);
         });
     }
 
@@ -59,7 +61,7 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
                         command -> {
                             log.info("SetConfigurationParameters");
                             handleSetConfigurationParameters(command);
-                            return behavior(commandResponseManager,loggerFactory);
+                            return behavior(commandResponseManager,segmentNumber, loggerFactory);
                         });
 
 
@@ -68,7 +70,8 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
 
     private void handleSetConfigurationParameters(ControlCommand message) {
 
-        log.info("handleSetConfigurationParameters = " + message);
+        log.info("handleSetConfigurationParameters = " + message + " for segment number " + segmentNumber);
+        System.out.println("handleSetConfigurationParameters = " + message + " for segment number " + segmentNumber);
 
         // send to HCD, here is where we decide that the architecture is one HCD with 492 segment worker actors
 
@@ -96,8 +99,8 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
 
     }
 
-    private Prefix assemblyPrefix = new Prefix("m1cs.control-assembly");
 
+    // do the actual communication with the software running on the segment
     CompletableFuture<CommandResponse.SubmitResponse> setConfig(Option<ObsId> obsId,
                                                                 Id runId,
                                                                 Parameter segmentParam,
