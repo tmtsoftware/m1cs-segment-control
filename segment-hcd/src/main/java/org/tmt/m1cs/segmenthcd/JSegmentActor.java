@@ -57,7 +57,7 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
 
         ReceiveBuilder<ControlCommand> builder = newReceiveBuilder()
                 .onMessage(ControlCommand.class,
-                        command -> command.commandName().name().equals("setConfigurationParameters"),
+                        command -> command.commandName().name().equals("configure"),
                         command -> {
                             log.info("SetConfigurationParameters");
                             handleSetConfigurationParameters(command);
