@@ -101,16 +101,9 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
             case "configure":
                 log.debug("handling config command: " + controlCommand);
 
-
-                // unpack the command to determine the target segment
-                Key segmentKey    = JKeyType.IntKey().make("segment");
-                Setup setup = (Setup)controlCommand;
-                Optional<Parameter<Integer>> segmentParameter = setup.jGet(segmentKey); //present
-                Integer segmentNumber = (segmentParameter.get().head()) + 1;
-
                 System.out.println("messaging segCommandHandlerActor");
 
-                JSegCommandHandlerActor.SubmitCommandMessage message = new JSegCommandHandlerActor.SubmitCommandMessage(controlCommand, segmentNumber);
+                JSegCommandHandlerActor.SubmitCommandMessage message = new JSegCommandHandlerActor.SubmitCommandMessage(controlCommand);
 
                 segCommandHandlerActor.tell(message);
 

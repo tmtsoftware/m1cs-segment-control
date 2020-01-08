@@ -23,15 +23,14 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
 
     public static final class SubmitCommandMessage implements CmdMessage {
 
-        public final Integer segmentNumber;
 
         public final ControlCommand controlCommand;
 
 
-        public SubmitCommandMessage(ControlCommand controlCommand, Integer segmentNumber) {
+        public SubmitCommandMessage(ControlCommand controlCommand) {
 
             this.controlCommand = controlCommand;
-            this.segmentNumber = segmentNumber;
+
         }
     }
 
