@@ -62,7 +62,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
         // This creates 492 worker actors, which are much more lightweight than individual HCDs
         for (int i=0; i<492; i++) {
             ActorRef<ControlCommand> segmentActor =
-                    ctx.spawnAnonymous(JSegmentActor.behavior(cswCtx.commandResponseManager(), cswCtx.loggerFactory()));
+                    ctx.spawnAnonymous(JSegmentActor.behavior(cswCtx.commandResponseManager(), i+1, cswCtx.loggerFactory()));
             segmentActorList.add(segmentActor);
 
             log.info("created segment worker " +(i+1));
