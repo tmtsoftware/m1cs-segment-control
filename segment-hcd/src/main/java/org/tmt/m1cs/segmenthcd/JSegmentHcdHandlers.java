@@ -34,7 +34,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
     private final JCswContext cswCtx;
     private final ILogger log;
     private final ActorContext<TopLevelActorMessage> ctx;
-    private ActorRef<ControlCommand> segCommandHandlerActor;
+    private ActorRef<JSegCommandHandlerActor.SubmitCommandMessage> segCommandHandlerActor;
     private ActorRef<JStatePublisherActor.StatePublisherMessage> statePublisherActor;
 
 
@@ -110,7 +110,9 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
 
                 System.out.println("messaging segCommandHandlerActor");
 
-                segCommandHandlerActor.tell(controlCommand);
+                JSegCommandHandlerActor.SubmitCommandMessage message = new JSegCommandHandlerActor.SubmitCommandMessage(controlCommand, segmentNumber);
+
+                segCommandHandlerActor.tell(message);
 
                 cswCtx.commandResponseManager().addOrUpdateCommand(new CommandResponse.Completed(controlCommand.runId()));
 

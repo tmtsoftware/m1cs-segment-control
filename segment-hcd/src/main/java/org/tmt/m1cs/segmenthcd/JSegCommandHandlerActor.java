@@ -23,11 +23,15 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
 
     public static final class SubmitCommandMessage implements CmdMessage {
 
+        public final Integer segmentNumber;
+
         public final ControlCommand controlCommand;
 
 
-        public SubmitCommandMessage(ControlCommand controlCommand) {
+        public SubmitCommandMessage(ControlCommand controlCommand, Integer segmentNumber) {
+
             this.controlCommand = controlCommand;
+            this.segmentNumber = segmentNumber;
         }
     }
 
@@ -66,7 +70,7 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
 
         ReceiveBuilder<CmdMessage> builder = newReceiveBuilder()
                 .onMessage(SubmitCommandMessage.class,
-                        //command -> command.controlCommand.commandName().name().equals("configure"),
+                        command -> command.controlCommand.commandName().name().equals("configure"),
                         command -> {
                             log.info("configure");
                             System.out.println("IN CREATE RECEIVE" + command.controlCommand.commandName().name());
