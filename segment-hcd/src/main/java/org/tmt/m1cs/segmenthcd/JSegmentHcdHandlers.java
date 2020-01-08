@@ -112,7 +112,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
 
                 JSegCommandHandlerActor.SubmitCommandMessage message = new JSegCommandHandlerActor.SubmitCommandMessage(controlCommand, segmentNumber);
 
-                //segCommandHandlerActor.tell(message);
+                segCommandHandlerActor.tell(message);
 
                 cswCtx.commandResponseManager().addOrUpdateCommand(new CommandResponse.Completed(controlCommand.runId()));
 
