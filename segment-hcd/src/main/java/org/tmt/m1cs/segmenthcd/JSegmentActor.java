@@ -114,7 +114,7 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
             } catch (InterruptedException e) {
                 throw new IllegalStateException(e);
             }
-            return new CommandResponse.Completed(runId);
+            return new CommandResponse.Error(runId, "testing failure");
         });
 
 
