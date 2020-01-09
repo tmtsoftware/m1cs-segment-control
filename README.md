@@ -46,7 +46,7 @@ Test suites covering individual components and combinations of components are in
 
 * testAssemblyShouldBeLocatableUsingLocationService - simple example test that tests that the assembly can be located by the location service.
 	
-* testPublishEvents - publishes events using the event service.  The Control Assembly is a subscriber and this test exercises the publishing and subsequent subscription arrival of events.
+* testPublishEvents - publishes events using the event service.  The Control Assembly is a subscriber and this test exercises the publishing and subsequent subscriber handling of events.
 
 **segment-hcd/src/test/JSegmentHcdTest.java** - JUnit test suite for segment HCD component only
 * testHcdShouldBeLocatableUsingLocationService
