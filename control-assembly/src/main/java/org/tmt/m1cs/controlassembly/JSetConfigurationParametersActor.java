@@ -107,7 +107,6 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
                                             Parameter config1Param,
                                             Parameter config2Param) {
 
-        System.out.println("SETCONFIG " + segmentHcd);
 
         if (segmentHcd.isPresent()) {
 
@@ -123,7 +122,7 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
 
         } else {
 
-            return CompletableFuture.completedFuture(new CommandResponse.Error(new Id(""), "Can't locate TcsTemplateHcd"));
+            return CompletableFuture.completedFuture(new CommandResponse.Error(new Id(""), "Can't locate segmentHcd"));
         }
 
     }
