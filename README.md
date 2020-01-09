@@ -2,18 +2,19 @@
 
 This project provides an example Assembly (control-assembly) and HCD (segment-hcd) for use by the 
 M1CS team.  It contains Java examples of:
-* Akka actor: standard code patterns, message handling, CSW integration
+* an HCD (Hardware Control Daemon) and an Assembly using 
+  TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs
+* creating Akka actors: standard code patterns, message handling, CSW integration
 * CSW components and services usage: command sending and command handling/validation, event subscription, 
 component CurrentState publishing.
 * Component testing using JUnit and CSW testkit
 * Akka actor testing using JUnit
-* Client project to execute commands and send events to deployed components in an actual runtime environment.
+* a Client project to execute commands and send events to components when deploying to a runtime environment.
 
 This project also is used for the M1CS team to gain experience with the STIL Continuous Integration (CI) and BTEs.
-An AWS BTE that includes a Jenkins build and test project: *M1CS_Segment_Control_Test* is provided.  
+An AWS BTE that includes a Jenkins build and test project is provided.  
 
-This project implements an HCD (Hardware Control Daemon) and an Assembly using 
-TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs. 
+This project implements . 
 
 ## M1CS Example Design
 
@@ -40,6 +41,7 @@ When the ‘SetConfigurationParameters’ command reaches the HCD, it is handled
 The JStatePublisherActor publishes a CurrentState message to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that can be used for state management of the assembly.  Events derived from monitor state and the HCD are published to outside the assembly using the JEventPublisherActor. 
 
 ## Testing
+### JUnit Test Suites
 Test suites covering individual components and combinations of components are included in the example:
 
 **control-assembly/src/test/JSegmentAssemblyTest.java** - JUnit test suite for control-assembly component only
@@ -56,19 +58,19 @@ Test suites covering individual components and combinations of components are in
 * testAssemblyHandlesCommand: traverses the entire command path of the example from the Assembly to the HCD to the designated segment actor for disposition.  This design differs from 492 HCDs and is proposed here merely as a design to compare and contrast strengths and weaknesses. It also serves as a proof of concept for one design approach that avoids using 492 HCDs.
 
 
-## Subprojects
+### CI Build and Test 
+
+A Jenkins project is included that builds from this Github project and runs the test suites. The Jenkins environment for M1CS team members is located at http://52.36.63.204:8080
+The Jenkins test project that builds and runs the JUnit tests is named *M1CS_Segment_Control_Test*.
+
+## Building and deploying manually
+### Subprojects
 
 * control-assembly - an assembly that talks to the segment HCD
 * segment-hcd - an HCD that talks to the segment hardware
 * segment-deploy - for starting/deploying HCDs and assemblies
 
-## CI Build and Test 
-
-A Jenkins project is included that builds from this Github project and runs the test suites. The Jenkins environment for M1CS team members is located at http://52.36.63.204:8080
-
-## Building and deploying manually
-
-## Prerequisites for running Components
+### Prerequisites for running Components
 
 The CSW services need to be running before starting the components. 
 This is done by starting the `csw-services.sh` script, which is installed as part of the csw build.
@@ -80,32 +82,28 @@ If you are not building csw from the sources, you can get the script as follows:
  - Run `./csw_services.sh --help` to get more information.
  - Run `./csw_services.sh start` to start the location service and config server.
 
-## Building the HCD and Assembly Applications
+### Building the HCD and Assembly Applications
 
  - Run `sbt segment-deploy/universal:packageBin`, this will create self contained zip in `segment-deploy/target/universal` directory
  - Unzip the generated zip and cd into the bin directory
 
 Note: An alternative method is to run `sbt stage`, which installs the applications locally in `segment-deploy/target/universal/stage/bin`.
 
-## Running the HCD and Assembly
+### Running the HCD and Assembly
 
 Run the container cmd script with arguments. For example:
 
-* Run the HCD in standalone mode with a local config file (The standalone config format is differennt than the container format):
-
-```
-./target/universal/stage/bin/segment-container-cmd-app --standalone --local ./src/main/resources/SampleHcdStandalone.conf
-```
 
 * Start the HCD and assembly in a container using the Java implementations:
 
 ```
+cd <project home directory>/segment-deploy
 ./target/universal/stage/bin/segment-container-cmd-app --local ./src/main/resources/JSampleContainer.conf
 ```
 
-* Or the Scala versions:
+### Running the example Client
+```
+TBD
+```
 
-```
-./target/universal/stage/bin/segment-container-cmd-app --local ./src/main/resources/SampleContainer.conf
-```
 
