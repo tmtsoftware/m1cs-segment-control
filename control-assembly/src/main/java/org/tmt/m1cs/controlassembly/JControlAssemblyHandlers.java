@@ -105,7 +105,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
         System.out.println("OnSubmit");
         commandHandlerActor.tell(new JCommandHandlerActor.SubmitCommandMessage(controlCommand));
 
-        return new CommandResponse.Completed(controlCommand.runId());
+        return new CommandResponse.Started(controlCommand.runId());
     }
 
     @Override

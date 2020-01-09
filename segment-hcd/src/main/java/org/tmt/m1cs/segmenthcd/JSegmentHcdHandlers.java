@@ -107,7 +107,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
 
                 segCommandHandlerActor.tell(message);
 
-                cswCtx.commandResponseManager().addOrUpdateCommand(new CommandResponse.Completed(controlCommand.runId()));
+                //cswCtx.commandResponseManager().addOrUpdateCommand(new CommandResponse.Completed(controlCommand.runId()));
 
                 break;
 
@@ -117,7 +117,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
 
         }
 
-        return new CommandResponse.Completed(controlCommand.runId());
+        return new CommandResponse.Started(controlCommand.runId());
     }
 
     @Override
