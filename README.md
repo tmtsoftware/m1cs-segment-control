@@ -7,6 +7,7 @@ M1CS team.  It contains Java examples of:
 component CurrentState publishing.
 * Component testing using JUnit and CSW testkit
 * Akka actor testing using JUnit
+* Client project to execute commands and send events to deployed components in an actual runtime environment.
 
 This project also is used for the M1CS team to gain experience with the STIL Continuous Integration (CI) and BTEs.
 An AWS BTE that includes a Jenkins build and test project: *M1CS_Segment_Control_Test* is provided.  
@@ -38,6 +39,21 @@ When the ‘SetConfigurationParameters’ command reaches the HCD, it is handled
 ### State and Error Reporting
 The JStatePublisherActor publishes a CurrentState message to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that can be used for state management of the assembly.  Events derived from monitor state and the HCD are published to outside the assembly using the JEventPublisherActor. 
 
+## Testing
+Test suites covering individual components and combinations of components are included in the example:
+
+**control-assembly/src/test/JSegmentAssemblyTest.java** - JUnit test suite for control-assembly component only
+
+* testAssemblyShouldBeLocatableUsingLocationService - simple example test that tests that the assembly can be located by the location service.
+	
+* testPublishEvents - publishes events using the event service.  The Control Assembly is a subscriber and this test exercises the publishing and subsequent subscription arrival of events.
+
+**segment-hcd/src/test/JSegmentHcdTest.java** - JUnit test suite for segment HCD component only
+* testHcdShouldBeLocatableUsingLocationService
+
+**segment-deploy/src/test/JSegmentDeployTest** - JUnit test suite for assembly and HCD end to end tests
+	
+* testAssemblyHandlesCommand: traverses the entire command path of the example from the Assembly to the HCD to the designated segment actor for disposition.  This design differs from 492 HCDs and is proposed here merely as a design to compare and contrast strengths and weaknesses. It also serves as a proof of concept for one design approach that avoids using 492 HCDs.
 
 
 ## Subprojects

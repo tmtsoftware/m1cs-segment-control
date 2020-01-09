@@ -110,11 +110,13 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
         // Run a task asynchronously
         return CompletableFuture.supplyAsync(() -> {
             try {
+
+                // do work here
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 throw new IllegalStateException(e);
             }
-            return new CommandResponse.Error(runId, "testing failure");
+            return new CommandResponse.Completed(runId);
         });
 
 
