@@ -30,7 +30,6 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
         public SubmitCommandMessage(ControlCommand controlCommand) {
 
             this.controlCommand = controlCommand;
-
         }
     }
 
@@ -65,7 +64,7 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
     @Override
     public Receive<CmdMessage> createReceive() {
 
-        System.out.println("IN CREATE RECEIVE");
+        System.out.println("JSegCommandHandler: IN CREATE RECEIVE");
 
         ReceiveBuilder<CmdMessage> builder = newReceiveBuilder()
                 .onMessage(SubmitCommandMessage.class,
