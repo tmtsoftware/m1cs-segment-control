@@ -2,6 +2,8 @@ package org.tmt.m1cs.controlassembly;
 
 
 import akka.Done;
+import akka.actor.typed.ActorSystem;
+import akka.actor.typed.SpawnProtocol;
 import akka.stream.javadsl.Keep;
 import akka.stream.javadsl.Source;
 import csw.command.api.javadsl.ICommandService;
@@ -14,6 +16,8 @@ import csw.location.models.ComponentId;
 
 import csw.location.models.Connection;
 
+import csw.logging.client.internal.LoggingSystem;
+import csw.logging.client.javadsl.JLoggingSystemFactory;
 import csw.params.commands.CommandName;
 import csw.params.commands.CommandResponse;
 import csw.params.commands.Setup;
@@ -26,12 +30,10 @@ import csw.params.events.SystemEvent;
 import csw.params.javadsl.JKeyType;
 import csw.testkit.javadsl.FrameworkTestKitJunitResource;
 import csw.testkit.javadsl.JCSWService;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.scalatestplus.junit.JUnitSuite;
 import akka.util.Timeout;
+import scala.concurrent.Await;
 import scala.concurrent.duration.FiniteDuration;
 
 
@@ -48,6 +50,9 @@ import static csw.params.javadsl.JUnits.degree;
 
 public class JSegmentAssemblyTest extends JUnitSuite {
 
+    protected static ActorSystem actorSystem = ActorSystem.create(SpawnProtocol.behavior(), "base-system");
+    protected static LoggingSystem loggingSystem;
+
 
 
     @ClassRule
@@ -56,9 +61,18 @@ public class JSegmentAssemblyTest extends JUnitSuite {
 
     @BeforeClass
     public static void setup() {
+
+        loggingSystem = JLoggingSystemFactory.start("Logger-Test", "SNAPSHOT-1.0", "localhost", actorSystem);
         // uncomment if you want one Assembly run for all tests
         //testKit.spawnStandalone(com.typesafe.config.ConfigFactory.load("JSegmentAssemblyStandalone.conf"));
         testKit.spawnContainer(com.typesafe.config.ConfigFactory.load("JSegmentContainer.conf"));
+    }
+
+    @AfterClass
+    public static void teardown() throws Exception {
+        loggingSystem.javaStop().get();
+        actorSystem.terminate();
+        Await.result(actorSystem.whenTerminated(), scala.concurrent.duration.Duration.create(10, TimeUnit.SECONDS));
     }
 
     @Test
