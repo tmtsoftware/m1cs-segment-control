@@ -92,7 +92,7 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
 
             commandResponseManager.updateSubCommand(response);
 
-            log.info("move command message handled");
+            log.info("config command message handled");
 
         });
 

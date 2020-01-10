@@ -88,7 +88,7 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
 
             commandResponseManager.updateSubCommand(response);
 
-            log.info("move command message handled");
+            log.info("configure command message handled");
 
         });
 
