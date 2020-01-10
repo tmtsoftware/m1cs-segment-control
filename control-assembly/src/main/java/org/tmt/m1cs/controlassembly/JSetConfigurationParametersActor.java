@@ -68,19 +68,15 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
 
     private void handleSetConfigurationParameters(ControlCommand message) {
 
-        System.out.println(("handleSetConfigurationParameters"));
         log.info("handleSetConfigurationParameters = " + message);
-
-        // send to HCD, here is where we decide that the architecture is one HCD with 492 segment worker actors
 
         // NOTE: we use get instead of getOrElse because we assume the command has been validated
         Parameter segmentParam = message.paramSet().find(x -> x.keyName().equals("segment")).get();
         Parameter config1Param = message.paramSet().find(x -> x.keyName().equals("config1")).get();
         Parameter config2Param = message.paramSet().find(x -> x.keyName().equals("config2")).get();
 
-        // create Point and PointDemand messages and send to HCD
+        // create configure message and send to HCD
 
-        System.out.println(("calling setConfigFuture"));
         CompletableFuture<CommandResponse.SubmitResponse> setConfigFuture = setConfig(message.maybeObsId(), segmentParam, config1Param, config2Param);
 
         setConfigFuture.thenAccept((response) -> {
@@ -110,7 +106,7 @@ public class JSetConfigurationParametersActor extends AbstractBehavior<ControlCo
 
         if (segmentHcd.isPresent()) {
 
-            System.out.println("Sending command to HCD");
+            log.info("Sending command to HCD");
 
             Setup setupHcd = new Setup(assemblyPrefix, new CommandName("configure"), Optional.empty()).add(segmentParam).add(config1Param).add(config2Param);
 

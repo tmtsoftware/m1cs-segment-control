@@ -64,8 +64,6 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
     @Override
     public Receive<CmdMessage> createReceive() {
 
-        System.out.println("JSegCommandHandler: IN CREATE RECEIVE");
-
         ReceiveBuilder<CmdMessage> builder = newReceiveBuilder()
                 .onMessage(SubmitCommandMessage.class,
                         command -> command.controlCommand.commandName().name().equals("configure"),
@@ -103,7 +101,7 @@ public class JSegCommandHandlerActor extends AbstractBehavior<JSegCommandHandler
             Integer segmentNumber = (Integer)segmentParam.jValues().get(0);
             ActorRef<ControlCommand> segmentActor = segmentActorList.get(segmentNumber-1);
 
-            System.out.println("messaging segment Actor: " + segmentActor + " for segment " + segmentNumber);
+          log.info("messaging segment Actor: " + segmentActor + " for segment " + segmentNumber);
 
             segmentActor.tell(controlCommand);
 

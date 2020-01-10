@@ -102,7 +102,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     @Override
     public CommandResponse.SubmitResponse onSubmit(ControlCommand controlCommand) {
 
-        System.out.println("OnSubmit");
+
         commandHandlerActor.tell(new JCommandHandlerActor.SubmitCommandMessage(controlCommand));
 
         return new CommandResponse.Started(controlCommand.runId());

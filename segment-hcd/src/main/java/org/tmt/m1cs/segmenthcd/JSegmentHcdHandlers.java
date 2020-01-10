@@ -65,7 +65,7 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
                     ctx.spawnAnonymous(JSegmentActor.behavior(cswCtx.commandResponseManager(), i+1, cswCtx.loggerFactory()));
             segmentActorList.add(segmentActor);
 
-            log.info("created segment worker " +(i+1));
+            log.info("created segment worker " +(i+1) + ":" + segmentActor);
         }
 
         segCommandHandlerActor =
@@ -100,8 +100,6 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
 
             case "configure":
                 log.debug("handling config command: " + controlCommand);
-
-                System.out.println("messaging segCommandHandlerActor");
 
                 JSegCommandHandlerActor.SubmitCommandMessage message = new JSegCommandHandlerActor.SubmitCommandMessage(controlCommand);
 

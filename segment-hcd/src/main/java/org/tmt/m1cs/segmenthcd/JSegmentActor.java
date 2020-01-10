@@ -71,7 +71,6 @@ public class JSegmentActor extends AbstractBehavior<ControlCommand> {
     private void handleSetConfigurationParameters(ControlCommand message) {
 
         log.info("handleSetConfigurationParameters = " + message + " for segment number " + segmentNumber);
-        System.out.println("handleSetConfigurationParameters = " + message + " for segment number " + segmentNumber);
 
         // send to HCD, here is where we decide that the architecture is one HCD with 492 segment worker actors
 
