@@ -72,6 +72,7 @@ The Jenkins test project that builds and runs the JUnit tests is named *M1CS_Seg
 
 ### Prerequisites for running Components
 
+#### CSW services
 The CSW services need to be running before starting the components. 
 This is done by starting the `csw-services.sh` script, which is installed as part of the csw build.
 If you are not building csw from the sources, you can get the script as follows:
@@ -81,6 +82,17 @@ If you are not building csw from the sources, you can get the script as follows:
  - Go to the bin directory where you will find `csw-services.sh` script.
  - Run `./csw_services.sh --help` to get more information.
  - Run `./csw_services.sh start` to start the location service and config server.
+
+#### Setting up configuration files
+The example uses a configuration file in the configuration service as an example of how to read a configuration from that service.
+This file needs to be initialized in the configuration repository.
+
+```
+cd <project home>/segment-deploy/src/main/resources
+./initialize-config.sh
+
+<follow the login procedure for AAS authentication>
+```
 
 ### Building the HCD and Assembly Applications
 

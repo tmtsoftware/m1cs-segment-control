@@ -1,10 +1,21 @@
 package org.tmt.m1cs.controlassembly;
 
+import akka.actor.ActorRefFactory;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.javadsl.ActorContext;
+import akka.actor.typed.javadsl.Adapter;
+import akka.stream.Materializer;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigObject;
 import csw.command.api.javadsl.ICommandService;
 import csw.command.client.CommandServiceFactory;
 import csw.command.client.messages.TopLevelActorMessage;
+import csw.config.api.ConfigData;
+import csw.config.api.javadsl.IConfigClientService;
+import csw.config.client.internal.ActorRuntime;
+import csw.config.client.javadsl.JConfigClientFactory;
+import csw.framework.exceptions.FailureStop;
+
 import csw.framework.javadsl.JComponentHandlers;
 import csw.framework.models.JCswContext;
 import csw.location.models.AkkaLocation;
@@ -17,10 +28,13 @@ import csw.params.commands.ControlCommand;
 import csw.params.core.models.Prefix;
 import csw.time.core.models.UTCTime;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Domain specific logic should be written in below handlers.
@@ -35,6 +49,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     private final JCswContext cswCtx;
     private final ILogger log;
     private  ActorContext<TopLevelActorMessage> ctx;
+    private IConfigClientService clientApi;
 
     private ActorRef<JCommandHandlerActor.CmdMessage> commandHandlerActor;
 
@@ -48,7 +63,16 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
         this.ctx = ctx;
         this.log = cswCtx.loggerFactory().getLogger(getClass());
 
-     }
+        // Handle to the config client service
+        clientApi = JConfigClientFactory.clientApi(ctx.getSystem(), cswCtx.locationService());
+
+        // Load the configuration from the configuration service
+        Config config = getHcdConfig();
+
+        // log some configuration values
+        logConfig(config);
+
+    }
 
 
     @Override
@@ -130,5 +154,72 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
     public void onOperationsMode(){
 
+    }
+
+    public class ConfigNotAvailableException extends FailureStop {
+
+        public ConfigNotAvailableException() {
+            super("Configuration not available. Initialization failure.");
+        }
+    }
+
+    private Config getHcdConfig() {
+
+        try {
+            ActorRefFactory actorRefFactory = Adapter.toUntyped(ctx.getSystem());
+
+            ActorRuntime actorRuntime = new ActorRuntime(ctx.getSystem());
+
+            Materializer mat = actorRuntime.mat();
+
+            ConfigData configData = getHcdConfigData();
+
+            return configData.toJConfigObject(mat).get();
+
+        } catch (Exception e) {
+            throw new ConfigNotAvailableException();
+        }
+
+    }
+
+    private ConfigData getHcdConfigData() throws ExecutionException, InterruptedException {
+
+        log.info("loading assembly configuration");
+
+        // construct the path
+        Path filePath = Paths.get("/config/org/tmt/m1cs/control.conf");
+
+        ConfigData activeFile = clientApi.getActive(filePath).get().get();
+
+        return activeFile;
+    }
+
+    // examples of how to extract configuration parameters
+    private void logConfig(Config config) {
+
+        String IP = config.getString("controlConfig.IP");
+
+        log.info("Configuration parameter read in: IP = " + IP);
+
+        for (ConfigObject configObject : config.getObjectList("controlConfig.variables")) {
+
+            String name = configObject.toConfig().getString("Name");
+            String tagName = configObject.toConfig().getString("Tag");
+            int tagMemberNumber = configObject.toConfig().getInt("TagMemberNumber");
+            String javaTypeName = configObject.toConfig().getString("JavaType");
+            boolean isBoolean = configObject.toConfig().getBoolean("IsBoolean");
+            int bitPosition = configObject.toConfig().getInt("BitPosition");
+            String units = configObject.toConfig().getString("Units");
+
+            log.info("Configuration read into assembly: " +
+                    "name = " + name +
+                    ", tagName = " + tagName +
+                    ", tagMemberNumber = " + tagMemberNumber +
+                    ", javaTypeName = " + javaTypeName +
+                    ", isBoolean = " + isBoolean +
+                    ", bitPosition = " + bitPosition +
+                    ", units = " + units
+            );
+        }
     }
 }
