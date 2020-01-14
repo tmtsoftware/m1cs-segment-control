@@ -63,14 +63,20 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
         this.ctx = ctx;
         this.log = cswCtx.loggerFactory().getLogger(getClass());
 
-        // Handle to the config client service
-        clientApi = JConfigClientFactory.clientApi(ctx.getSystem(), cswCtx.locationService());
+        // this is in a try/catch in case the test environment does not have the configuration loaded, so that tests can continue
+        try {
+            // Handle to the config client service
+            clientApi = JConfigClientFactory.clientApi(ctx.getSystem(), cswCtx.locationService());
 
-        // Load the configuration from the configuration service
-        Config config = getHcdConfig();
+            // Load the configuration from the configuration service
+            Config config = getHcdConfig();
 
-        // log some configuration values
-        logConfig(config);
+            // log some configuration values
+            logConfig(config);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
     }
 
