@@ -66,7 +66,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
         this.log = cswCtx.loggerFactory().getLogger(getClass());
 
         // create the monitorActor
-        monitorActor = ctx.spawnAnonymous(JMonitorActor.behavior(JMonitorActor.AssemblyState.Ready, JMonitorActor.AssemblyMotionState.Idle, cswCtx.loggerFactory()));
+        monitorActor = ctx.spawnAnonymous(JMonitorActor.behavior(JMonitorActor.AssemblyState.Ready, JMonitorActor.AssemblyMotionState.Halted, cswCtx.loggerFactory()));
 
         // this is in a try/catch in case the test environment does not have the configuration loaded, so that tests can continue
         try {

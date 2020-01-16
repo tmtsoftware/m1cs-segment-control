@@ -94,7 +94,6 @@ public class JMonitorActor extends AbstractBehavior<JMonitorActor.MonitorMessage
                             log.info("AssemblyStateChangeMessage Received");
                             // change the behavior state
                             return behavior(message.assemblyState, assemblyMotionState, loggerFactory);
-
                         })
                 .onMessage(AssemblyMotionStateChangeMessage.class,
                         message -> {

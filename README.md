@@ -38,7 +38,11 @@ The Segment HCD also contains a JSegmentHcdHandlers class provided by the CSW fr
 When the ‘SetConfigurationParameters’ command reaches the HCD, it is handled by the JSegmentHcdHandlers onSubmit() method that the programmer overrides, which passes it to the JSegCommandHandlerActor  that determines which JSegmentActor the command is meant for, and sends the appropriate message to that actor.
 
 ### State and Error Reporting
-The JStatePublisherActor publishes a CurrentState message to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that can be used for state management of the assembly.  Events derived from monitor state and the HCD are published to outside the assembly using the JEventPublisherActor. 
+The JStatePublisherActor publishes a CurrentState message to the assembly.  This is used to transmit state telemetry from the HCD(s)
+to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that is used for state management of the assembly.  The MonitorActor also accepts manual state change messages from 
+other actor components to change its state.  
+
+Events derived from monitor state and the HCD are published to outside the assembly using the JEventPublisherActor. 
 
 ## Testing
 ### JUnit Test Suites
