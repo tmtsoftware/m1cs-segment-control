@@ -139,11 +139,11 @@ public class JMonitorActor extends AbstractBehavior<JMonitorActor.MonitorMessage
     // this is where that would be handled.
     private Behavior<MonitorMessage> onCurrentStateEventMessage(CurrentStateEventMessage message) {
 
-        log.info("current state handler");
+        log.info("JMonitorActor::current state handler");
 
         CurrentState currentState = message.currentState;
 
-        log.info("current state = " + currentState);
+        log.info("JMonitorActor::current state = " + currentState);
 
         // here the Monitor Actor can change its state depending on the current state of the HCD
         return JMonitorActor.behavior(assemblyState, assemblyMotionState, loggerFactory);

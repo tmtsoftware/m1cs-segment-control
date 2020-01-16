@@ -71,6 +71,9 @@ public class JSegmentHcdHandlers extends JComponentHandlers {
         segCommandHandlerActor =
                 ctx.spawnAnonymous(JSegCommandHandlerActor.behavior(cswCtx.commandResponseManager(), true, segmentActorList, cswCtx.loggerFactory()));
 
+        // uncomment to start the CurrentState publishing
+        // statePublisherActor.tell(new JStatePublisherActor.StartMessage());
+
 
     });
     }

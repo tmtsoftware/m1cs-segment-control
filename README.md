@@ -42,6 +42,12 @@ The JStatePublisherActor publishes a CurrentState message to the assembly.  This
 to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that is used for state management of the assembly.  The MonitorActor also accepts manual state change messages from 
 other actor components to change its state.  
 
+The logging output associated with this example code can pollute other tests, so the 'Start' message sent from the JSegmentHcdHandlers.java class
+is commented out:
+```
+        // uncomment to start the CurrentState publishing
+        // statePublisherActor.tell(new JStatePublisherActor.StartMessage());
+```
 Events derived from monitor state and the HCD are published to outside the assembly using the JEventPublisherActor. 
 
 ## Testing

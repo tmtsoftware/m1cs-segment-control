@@ -12,6 +12,7 @@ import csw.params.core.models.Prefix;
 import csw.params.core.states.CurrentState;
 import csw.params.core.states.StateName;
 import csw.params.javadsl.JKeyType;
+import csw.time.core.models.UTCTime;
 import scala.concurrent.duration.Duration;
 
 import java.time.Instant;
@@ -41,14 +42,12 @@ public class JStatePublisherActor extends AbstractBehavior<JStatePublisherActor.
     Prefix prefix = new Prefix("m1cs.hcd");
 
     //keys
-    Key timestampKey    = JKeyType.UTCTimeKey().make("timestampKey");
+    Key timestampKey = JKeyType.UTCTimeKey().make("timestampKey");
 
-    Key azPosKey        = JKeyType.DoubleKey().make("azPosKey");
-    Key azPosErrorKey   = JKeyType.DoubleKey().make("azPosErrorKey");
-    Key elPosKey        = JKeyType.DoubleKey().make("elPosKey");
-    Key elPosErrorKey   = JKeyType.DoubleKey().make("elPosErrorKey");
-    Key azInPositionKey = JKeyType.BooleanKey().make("azInPositionKey");
-    Key elInPositionKey = JKeyType.BooleanKey().make("elInPositionKey");
+    Key param1Key = JKeyType.DoubleKey().make("param1");
+
+    Key param2Key = JKeyType.BooleanKey().make("param2");
+
 
     private static final Object TIMER_KEY = new Object();
 
@@ -113,27 +112,19 @@ public class JStatePublisherActor extends AbstractBehavior<JStatePublisherActor.
 
         // example parameters for a current state
 
-        Parameter azPosParam        = azPosKey.set(35.34).withUnits(degree);
-        Parameter azPosErrorParam   = azPosErrorKey.set(0.34).withUnits(degree);
-        Parameter elPosParam        = elPosKey.set(46.7).withUnits(degree);
-        Parameter elPosErrorParam   = elPosErrorKey.set(0.03).withUnits(degree);
-        Parameter azInPositionParam = azInPositionKey.set(false);
-        Parameter elInPositionParam = elInPositionKey.set(true);
+        Parameter param1 = param1Key.set(35.34).withUnits(degree);
 
-        Parameter timestamp = timestampKey.set(Instant.now());
+        Parameter param2 = param2Key.set(false);
+
+        Parameter timestamp = timestampKey.set(UTCTime.now());
 
         //create CurrentState and use sequential add
-        CurrentState currentState = new CurrentState(prefix, new StateName("whatever"))
-                .add(azPosParam)
-                .add(elPosParam)
-                .add(azPosErrorParam)
-                .add(elPosErrorParam)
-                .add(azInPositionParam)
-                .add(elInPositionParam)
+        CurrentState currentState = new CurrentState(prefix, new StateName("state1"))
+                .add(param1)
+                .add(param2)
                 .add(timestamp);
 
         currentStatePublisher.publish(currentState);
-
 
     }
 
