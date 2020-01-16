@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.Adapter;
 import akka.stream.Materializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
+import csw.command.api.CurrentStateSubscription;
 import csw.command.api.javadsl.ICommandService;
 import csw.command.client.CommandServiceFactory;
 import csw.command.client.messages.TopLevelActorMessage;
@@ -18,10 +19,7 @@ import csw.framework.exceptions.FailureStop;
 
 import csw.framework.javadsl.JComponentHandlers;
 import csw.framework.models.JCswContext;
-import csw.location.models.AkkaLocation;
-import csw.location.models.Connection;
-import csw.location.models.LocationUpdated;
-import csw.location.models.TrackingEvent;
+import csw.location.models.*;
 import csw.logging.api.javadsl.ILogger;
 import csw.params.commands.CommandResponse;
 import csw.params.commands.ControlCommand;
@@ -52,16 +50,23 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
     private IConfigClientService clientApi;
 
     private ActorRef<JCommandHandlerActor.CmdMessage> commandHandlerActor;
+    private ActorRef<JMonitorActor.MonitorMessage> monitorActor;
 
     // reference to the template HCD
     private Map<Integer, Optional<ICommandService>> runningHcds;
-    private Optional<ICommandService> hcd = Optional.empty(); // NOTE the use of Optional
+    private Optional<ICommandService> segmentHcd = Optional.empty(); // NOTE the use of Optional
+
+    // handle to the segmentHcd CurrentState message subscription
+    private Optional<CurrentStateSubscription> subscription = Optional.empty();
 
     JControlAssemblyHandlers(ActorContext<TopLevelActorMessage> ctx, JCswContext cswCtx) {
         super(ctx, cswCtx);
         this.cswCtx = cswCtx;
         this.ctx = ctx;
         this.log = cswCtx.loggerFactory().getLogger(getClass());
+
+        // create the monitorActor
+        monitorActor = ctx.spawnAnonymous(JMonitorActor.behavior(JMonitorActor.AssemblyState.Ready, JMonitorActor.AssemblyMotionState.Idle, cswCtx.loggerFactory()));
 
         // this is in a try/catch in case the test environment does not have the configuration loaded, so that tests can continue
         try {
@@ -71,7 +76,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
             // Load the configuration from the configuration service
             Config config = getHcdConfig();
 
-            // log some configuration values
+            // log some configuration values as an example of how to extract the values
             logConfig(config);
 
         } catch (Exception e) {
@@ -115,10 +120,27 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
             AkkaLocation hcdLocation = (AkkaLocation) ((LocationUpdated) trackingEvent).location();
 
 
-            hcd = Optional.of(CommandServiceFactory.jMake(hcdLocation, ctx.getSystem()));
+            segmentHcd = Optional.of(CommandServiceFactory.jMake(hcdLocation, ctx.getSystem()));
 
             // Actor that handles commands and directs them to worker actors
-            commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), hcd, Boolean.TRUE, cswCtx.loggerFactory()));
+            commandHandlerActor = ctx.spawnAnonymous(JCommandHandlerActor.behavior(cswCtx.commandResponseManager(), segmentHcd, Boolean.TRUE, cswCtx.loggerFactory()));
+
+            // set up Hcd CurrentState subscription to be handled by the monitor actor
+            subscription = Optional.of(segmentHcd.get().subscribeCurrentState(currentState ->
+                    monitorActor.tell(new JMonitorActor.CurrentStateEventMessage(currentState))));
+
+            // send message to monitor actor
+            monitorActor.tell(new JMonitorActor.LocationEventMessage(segmentHcd));
+
+        } else if (trackingEvent instanceof LocationRemoved) {
+            // do something for the tracked location when it is no longer available
+            segmentHcd = Optional.empty();
+            // FIXME: not sure if this is necessary
+            subscription.get().unsubscribe();
+
+            // send message to monitor actor
+            monitorActor.tell(new JMonitorActor.LocationEventMessage(segmentHcd));
+
 
         }
     }
