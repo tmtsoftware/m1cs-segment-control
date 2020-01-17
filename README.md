@@ -37,6 +37,11 @@ The Segment HCD also contains a JSegmentHcdHandlers class provided by the CSW fr
 
 When the ‘SetConfigurationParameters’ command reaches the HCD, it is handled by the JSegmentHcdHandlers onSubmit() method that the programmer overrides, which passes it to the JSegCommandHandlerActor  that determines which JSegmentActor the command is meant for, and sends the appropriate message to that actor.
 
+### Event Subscription and Handling
+The JEventHandlerActor implements an example of event subscription and handling.  Any actor or actors can subscribe to events 
+depending on the design of the assembly or HCD.
+
+
 ### State and Error Reporting
 The JStatePublisherActor publishes a CurrentState message to the assembly.  This is used to transmit state telemetry from the HCD(s)
 to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that is used for state management of the assembly.  The MonitorActor also accepts manual state change messages from 
@@ -58,7 +63,6 @@ Test suites covering individual components and combinations of components are in
 
 * testAssemblyShouldBeLocatableUsingLocationService - simple example test that tests that the assembly can be located by the location service.
 	
-* testPublishEvents - publishes events using the event service.  The Control Assembly is a subscriber and this test exercises the publishing and subsequent subscriber handling of events.
 
 **segment-hcd/src/test/JSegmentHcdTest.java** - JUnit test suite for segment HCD component only
 * testHcdShouldBeLocatableUsingLocationService
@@ -66,6 +70,8 @@ Test suites covering individual components and combinations of components are in
 **segment-deploy/src/test/JSegmentDeployTest** - JUnit test suite for assembly and HCD end to end tests
 	
 * testAssemblyHandlesCommand: traverses the entire command path of the example from the Assembly to the HCD to the designated segment actor for disposition.  This design differs from 492 HCDs and is proposed here merely as a design to compare and contrast strengths and weaknesses. It also serves as a proof of concept for one design approach that avoids using 492 HCDs.
+* testPublishEvents - publishes events using the event service.  This example can be used to simulate events coming
+from other subsystems. The JEventHandlerActor sets up a subscription and callback code handling the events from this test. 
 
 
 ### CI Build and Test 
@@ -78,7 +84,7 @@ The Jenkins test project that builds and runs the JUnit tests is named *M1CS_Seg
 
 * control-assembly - an assembly that talks to the segment HCD
 * segment-hcd - an HCD that talks to the segment hardware
-* segment-deploy - for starting/deploying HCDs and assemblies
+* segment-deploy - for starting/deploying HCDs and assemblies, plus client app code
 
 ### Prerequisites for running Components
 
@@ -87,7 +93,7 @@ The CSW services need to be running before starting the components.
 This is done by starting the `csw-services.sh` script, which is installed as part of the csw build.
 If you are not building csw from the sources, you can get the script as follows:
 
- - Download csw-apps zip from https://github.com/tmtsoftware/csw/releases.
+ - Download csw-apps zip from https://github.com/tmtsoftware/csw/releases.  This project is compatable with CSW version 1.0.0.
  - Unzip the downloaded zip.
  - Go to the bin directory where you will find `csw-services.sh` script.
  - Run `./csw_services.sh --help` to get more information.
@@ -101,7 +107,7 @@ This file needs to be initialized in the configuration repository.
 cd <project home>/segment-deploy/src/main/resources
 ./initialize-config.sh
 
-<follow the login procedure for AAS authentication>
+<follow the login procedure for AAS authentication, config-admin/config-admin>
 ```
 
 ### Building the HCD and Assembly Applications
