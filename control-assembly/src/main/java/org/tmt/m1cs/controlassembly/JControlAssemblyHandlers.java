@@ -51,6 +51,7 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
     private ActorRef<JCommandHandlerActor.CmdMessage> commandHandlerActor;
     private ActorRef<JMonitorActor.MonitorMessage> monitorActor;
+    private ActorRef<JEventHandlerActor.EventHandlerMessage> eventHandlerActor;
 
     // reference to the template HCD
     private Map<Integer, Optional<ICommandService>> runningHcds;
@@ -67,6 +68,8 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
         // create the monitorActor
         monitorActor = ctx.spawnAnonymous(JMonitorActor.behavior(JMonitorActor.AssemblyState.Ready, JMonitorActor.AssemblyMotionState.Halted, cswCtx.loggerFactory()));
+        // create the eventHandleActor
+        eventHandlerActor = ctx.spawnAnonymous(JEventHandlerActor.behavior(cswCtx.eventService(), cswCtx.loggerFactory()));
 
         // this is in a try/catch in case the test environment does not have the configuration loaded, so that tests can continue
         try {
