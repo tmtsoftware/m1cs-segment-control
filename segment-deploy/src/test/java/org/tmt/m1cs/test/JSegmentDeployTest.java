@@ -131,14 +131,14 @@ public class JSegmentDeployTest extends JUnitSuite {
     @Test
     public void testPublishEvents() throws ExecutionException, InterruptedException {
 
-        Prefix prefix = new Prefix("m1cs.event.test");
+        Prefix prefix = new Prefix("m1cs.event.example");
 
         int n = 10;
 
         //#with-source
         Source<Event, CompletionStage<Done>> eventStream = Source
                 .range(1, n)
-                .map(id -> makeEvent(id, prefix, new EventName("filter_wheel")))
+                .map(id -> makeEvent(id, prefix, new EventName("example_event")))
                 .watchTermination(Keep.right());
 
         testKit.jEventService().defaultPublisher().<CompletionStage<Done>>publish(eventStream, failure -> {
