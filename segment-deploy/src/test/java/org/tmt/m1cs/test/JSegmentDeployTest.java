@@ -138,7 +138,7 @@ public class JSegmentDeployTest extends JUnitSuite {
         //#with-source
         Source<Event, CompletionStage<Done>> eventStream = Source
                 .range(1, n)
-                .map(id -> makeEvent(id, prefix, new EventName("example_event")))
+                .map(number -> makeEvent(number, prefix, new EventName("example_event")))
                 .watchTermination(Keep.right());
 
         testKit.jEventService().defaultPublisher().<CompletionStage<Done>>publish(eventStream, failure -> {
@@ -148,8 +148,13 @@ public class JSegmentDeployTest extends JUnitSuite {
         //#with-source
     }
 
-    private Event makeEvent(int id, Prefix prefix, EventName name) {
-        return new SystemEvent(prefix, name);
+    // example event maker that uses the passed number to add to the paramset of the event
+    private Event makeEvent(int n, Prefix prefix, EventName name) {
+
+        Key segmentKey    = JKeyType.IntKey().make("segment");
+        Parameter segmentParam = segmentKey.set(n);
+
+        return new SystemEvent(prefix, name).add(segmentParam);
     }
 
 
