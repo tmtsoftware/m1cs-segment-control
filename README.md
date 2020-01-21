@@ -43,12 +43,11 @@ depending on the design of the assembly or HCD.
 
 
 ### State and Error Reporting
-The JStatePublisherActor publishes a CurrentState message to the assembly.  This is used to transmit state telemetry from the HCD(s)
+The JStatePublisherActor publishes a CurrentState message to the assembly.  The JStatePublisher uses TimerScheduler to send self generated messages at regular intervals. This is used to transmit state telemetry from the HCD(s)
 to the assembly.  In the example, the assembly subscription callback delegates handling of the message to the JMonitorActor, that is used for state management of the assembly.  The MonitorActor also accepts manual state change messages from 
 other actor components to change its state.  
 
-The logging output associated with this example code can pollute other tests, so the 'Start' message sent from the JSegmentHcdHandlers.java class
-is commented out:
+The logging output associated with this example code can pollute other tests, so the 'Start' message sent from the JSegmentHcdHandlers.java class is commented out (the JMonitorActor supports start and stop messages that start and stop the timer):
 ```
         // uncomment to start the CurrentState publishing
         // statePublisherActor.tell(new JStatePublisherActor.StartMessage());
