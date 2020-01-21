@@ -4,17 +4,16 @@ This project provides an example Assembly (control-assembly) and HCD (segment-hc
 M1CS team.  It contains Java examples of:
 * an HCD (Hardware Control Daemon) and an Assembly using 
   TMT Common Software ([CSW](https://github.com/tmtsoftware/csw)) APIs
-* creating Akka actors: standard code patterns, message handling, CSW integration
+* creating Akka actors: standard code patterns, message handling, actor query/reply examples, CSW integration
 * CSW components and services usage: command sending and command handling/validation, event subscription, 
 component CurrentState publishing.
 * Component testing using JUnit and CSW testkit
-* Akka actor testing using JUnit
+* Akka actor testing using JUnit and Akka testkit
 * a Client project to execute commands and send events to components when deploying to a runtime environment.
 
 This project also is used for the M1CS team to gain experience with the STIL Continuous Integration (CI) and BTEs.
 An AWS BTE that includes a Jenkins build and test project is provided.  
 
-This project implements . 
 
 ## M1CS Example Design
 
