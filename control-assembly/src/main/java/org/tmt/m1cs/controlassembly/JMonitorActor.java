@@ -1,5 +1,6 @@
 package org.tmt.m1cs.controlassembly;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.*;
 import csw.command.api.javadsl.ICommandService;
@@ -62,6 +63,28 @@ public class JMonitorActor extends AbstractBehavior<JMonitorActor.MonitorMessage
         }
     }
 
+    public static final class AssemblyStatesAskMessage implements MonitorMessage {
+
+        public final ActorRef<JMonitorActor.AssemblyStatesResponseMessage> replyTo;
+
+        public AssemblyStatesAskMessage(ActorRef<AssemblyStatesResponseMessage> replyTo) {
+            this.replyTo = replyTo;
+        }
+    }
+
+    public static final class AssemblyStatesResponseMessage implements MonitorMessage {
+        public final AssemblyState assemblyState;
+        public final AssemblyMotionState assemblyMotionState;
+
+        public AssemblyStatesResponseMessage(AssemblyState assemblyState, AssemblyMotionState assemblyMotionState) {
+            this.assemblyState = assemblyState;
+            this.assemblyMotionState = assemblyMotionState;
+        }
+    }
+
+
+
+
 
     private ActorContext<MonitorMessage> actorContext;
     private JLoggerFactory loggerFactory;
@@ -110,7 +133,15 @@ public class JMonitorActor extends AbstractBehavior<JMonitorActor.MonitorMessage
                         message -> {
                             log.info("CurrentStateEventMessage Received");
                             return onCurrentStateEventMessage(message);
+                        })
+                .onMessage(AssemblyStatesAskMessage.class,
+                        message -> {
+                            log.debug(() -> "AssemblyStatesAskMessage Received");
+                            // providing current lifecycle and operation state to sender for it's use such as validation.
+                            message.replyTo.tell(new AssemblyStatesResponseMessage(assemblyState, assemblyMotionState));
+                            return Behaviors.same();
                         });
+
         return builder.build();
     }
 

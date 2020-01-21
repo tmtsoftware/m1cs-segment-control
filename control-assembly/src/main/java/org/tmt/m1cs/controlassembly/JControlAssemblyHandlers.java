@@ -2,9 +2,12 @@ package org.tmt.m1cs.controlassembly;
 
 import akka.actor.ActorRefFactory;
 import akka.actor.typed.ActorRef;
+import akka.actor.typed.ActorSystem;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Adapter;
+import akka.actor.typed.javadsl.AskPattern;
 import akka.stream.Materializer;
+import akka.util.Timeout;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import csw.command.api.CurrentStateSubscription;
@@ -28,11 +31,13 @@ import csw.time.core.models.UTCTime;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Domain specific logic should be written in below handlers.
@@ -151,6 +156,12 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
 
     @Override
     public CommandResponse.ValidateCommandResponse validateCommand(ControlCommand controlCommand) {
+
+        // this code is an example of asking the monitor actor the state of the assembly and receiving a response
+        JMonitorActor.AssemblyState assemblyState = askOperationalStateFromMonitor(monitorActor, ctx.getSystem());
+        log.info("assemblyState = " + assemblyState);
+
+
         return new CommandResponse.Accepted(controlCommand.runId());
     }
 
@@ -253,4 +264,26 @@ public class JControlAssemblyHandlers extends JComponentHandlers {
             );
         }
     }
+
+
+    /**
+     * Getting state from monitor actor to perform state related validation etc.
+     * This is a blocking call to actor.  Not a perfect example, as it does not handle failure cases.
+     *
+     * @return
+     */
+    public static JMonitorActor.AssemblyState askOperationalStateFromMonitor(ActorRef<JMonitorActor.MonitorMessage> actorRef, ActorSystem sys) {
+        final JMonitorActor.AssemblyStatesResponseMessage assemblyStatesResponse;
+        try {
+            assemblyStatesResponse = AskPattern.ask(actorRef, (ActorRef<JMonitorActor.AssemblyStatesResponseMessage> replyTo) ->
+                            new JMonitorActor.AssemblyStatesAskMessage(replyTo)
+                    , Duration.ofSeconds(3), sys.scheduler()).toCompletableFuture().get();
+            //  log.debug(() -> "Got Assembly state from monitor actor - " + assemblyStates.assemblyOperationalState + " ,  " + assemblyStates.assemblyLifecycleState);
+            return assemblyStatesResponse.assemblyState;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
