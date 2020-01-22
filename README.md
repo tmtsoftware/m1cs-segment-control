@@ -110,10 +110,7 @@ cd <project home>/segment-deploy/src/main/resources
 
 ### Building the HCD and Assembly Applications
 
- - Run `sbt segment-deploy/universal:packageBin`, this will create self contained zip in `segment-deploy/target/universal` directory
- - Unzip the generated zip and cd into the bin directory
-
-Note: An alternative method is to run `sbt stage`, which installs the applications locally in `segment-deploy/target/universal/stage/bin`.
+ - Run `sbt stage`, which installs the applications locally in `segment-deploy/target/universal/stage/bin`.
 
 ### Running the HCD and Assembly
 
@@ -129,7 +126,8 @@ cd <project home directory>/segment-deploy
 
 ### Running the example Client
 ```
-TBD
+cd <project home directory>/segment-deploy
+./target/universal/stage/bin/stage-client-app
 ```
 
 
